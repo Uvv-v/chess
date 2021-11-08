@@ -58,6 +58,41 @@ import VGameGrid from '@/components/game/VGameGrid.vue';
 
 import Position from '@/model/Position';
 
+const startPositionsFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+/* eslint-disable no-continue */
+const parseFEN = (s) => {
+  const result = [];
+
+  const position = new Position(0, 0);
+
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === ' ') break;
+
+    if (s[i] === '/') {
+      position.x = 0;
+      position.y++;
+      continue;
+    }
+
+    if (/\d/.test(s[i])) {
+      position.x += Number(s[i]);
+      continue;
+    }
+
+    result.push({
+      sideKey: s[i].toUpperCase() === s[i] ? 'W' : 'B',
+      figureKey: s[i].toUpperCase(),
+      position: Position.clone(position),
+    });
+
+    position.x++;
+  }
+
+  return result;
+};
+/* eslint-enable no-continue */
+
 const figureMap = {
   K: { key: 'K', name: 'king', title: 'King' },
   Q: { key: 'Q', name: 'queen', title: 'Queen' },
@@ -72,49 +107,7 @@ const sideMap = {
   B: { key: 'B', name: 'b' },
 };
 
-const defaultFigures = [
-  { sideKey: 'W', figureKey: 'P', position: new Position(0, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(1, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(2, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(3, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(4, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(5, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(6, 6) },
-  { sideKey: 'W', figureKey: 'P', position: new Position(7, 6) },
-
-  { sideKey: 'W', figureKey: 'R', position: new Position(0, 7) },
-  { sideKey: 'W', figureKey: 'R', position: new Position(7, 7) },
-
-  { sideKey: 'W', figureKey: 'N', position: new Position(1, 7) },
-  { sideKey: 'W', figureKey: 'N', position: new Position(6, 7) },
-
-  { sideKey: 'W', figureKey: 'B', position: new Position(2, 7) },
-  { sideKey: 'W', figureKey: 'B', position: new Position(5, 7) },
-
-  { sideKey: 'W', figureKey: 'Q', position: new Position(3, 7) },
-  { sideKey: 'W', figureKey: 'K', position: new Position(4, 7) },
-
-  { sideKey: 'B', figureKey: 'P', position: new Position(0, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(1, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(2, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(3, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(4, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(5, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(6, 1) },
-  { sideKey: 'B', figureKey: 'P', position: new Position(7, 1) },
-
-  { sideKey: 'B', figureKey: 'R', position: new Position(0, 0) },
-  { sideKey: 'B', figureKey: 'R', position: new Position(7, 0) },
-
-  { sideKey: 'B', figureKey: 'N', position: new Position(1, 0) },
-  { sideKey: 'B', figureKey: 'N', position: new Position(6, 0) },
-
-  { sideKey: 'B', figureKey: 'B', position: new Position(2, 0) },
-  { sideKey: 'B', figureKey: 'B', position: new Position(5, 0) },
-
-  { sideKey: 'B', figureKey: 'Q', position: new Position(3, 0) },
-  { sideKey: 'B', figureKey: 'K', position: new Position(4, 0) },
-];
+const defaultFigures = parseFEN(startPositionsFEN);
 
 export default {
   name: 'VGame',
